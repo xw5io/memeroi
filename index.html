@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator | Crypto Investment Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7e22ce',
+                        secondary: '#a855f7',
+                        dark: '#0a0a0a',
+                        darker: '#000000',
+                        light: '#f5f3ff',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .glow:hover {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-darker min-h-screen font-sans text-light">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <div class="flex items-center justify-center gap-3">
+                <span class="text-5xl hover:text-green-400 transition-colors duration-300 mb-1 -mt-5">💵</span>
+                <h1 class="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 transition-all duration-300">
+                    MEMEROI CALCULATOR
+                </h1>
+            </div>
+            <p class="text-gray-400 max-w-2xl mx-auto">
+                "The crypto market moves fast - calculate your potential gains before FOMO kicks in!"
+            </p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Calculator Form -->
+            <div class="w-full lg:w-1/2 bg-dark rounded-2xl p-6 border border-purple-900 shadow-xl">
+                <div class="space-y-6">
+                    <!-- Initial Market Cap -->
+                    <div>
+                        <label for="initialCap" class="block text-sm font-medium text-gray-300 mb-1 flex items-center">
+                            <span class="bg-primary/20 text-primary px-2 py-1 rounded-md text-xs mr-2">STEP 1</span>
+                            Initial Market Cap ($)
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">$</span>
+                            </div>
+                            <input type="number" id="initialCap" placeholder="e.g., 1000000" 
+                                class="bg-black border border-purple-900 text-light rounded-lg focus:ring-primary focus:border-primary block w-full pl-8 pr-12 p-3 placeholder-gray-600">
+                        </div>
+                        <p class="mt-2 text-sm text-gray-400">The market cap when you first bought in</p>
+                    </div>
+
+                    <!-- Investment Amount -->
+                    <div>
+                        <label for="investment" class="block text-sm font-medium text-gray-300 mb-1 flex items-center">
+                            <span class="bg-secondary/20 text-secondary px-2 py-1 rounded-md text-xs mr-2">STEP 2</span>
+                            Investment Amount ($)
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">$</span>
+                            </div>
+                            <input type="number" id="investment" placeholder="e.g., 1000" 
+                                class="bg-dark/70 border border-purple-900 text-light rounded-lg focus:ring-primary focus:border-primary block w-full pl-8 pr-12 p-3 placeholder-gray-600">
+                        </div>
+                        <p class="mt-2 text-sm text-gray-400">How much you're investing</p>
+                    </div>
+
+                    <!-- New Market Cap -->
+                    <div>
+                        <label for="newCap" class="block text-sm font-medium text-gray-300 mb-1 flex items-center">
+                            <span class="bg-primary/20 text-primary px-2 py-1 rounded-md text-xs mr-2">STEP 3</span>
+                            New Market Cap ($)
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">$</span>
+                            </div>
+                            <input type="number" id="newCap" placeholder="e.g., 5000000" 
+                                class="bg-gray-700/50 border border-gray-600 text-light rounded-lg focus:ring-primary focus:border-primary block w-full pl-8 pr-12 p-3 placeholder-gray-600">
+                        </div>
+                        <p class="mt-2 text-sm text-gray-400">The market cap after the price movement</p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-4">
+                        <button id="calculateBtn" class="flex-1 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg px-5 py-3 text-center glow transition-all duration-300 mt-4">
+                            Calculate ROI
+                        </button>
+                        <button id="clearBtn" class="flex-1 bg-dark hover:bg-purple-900/50 text-white font-medium rounded-lg px-5 py-3 text-center transition-all duration-300 mt-4">
+                            Clear Fields
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="w-full lg:w-1/2 space-y-8">
+                <div class="bg-dark rounded-2xl p-6 border border-purple-900 shadow-xl">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M12 7a1 1 0 01-1-1V3a1 1 0 00-1-1H5a1 1 0 00-1 1v14a1 1 0 001 1h5a1 1 0 000-2H6V4h4v2a1 1 0 001 1zm4 14a1 1 0 001-1v-9a1 1 0 00-1-1h-3a1 1 0 100 2h2v8a1 1 0 001 1z" clip-rule="evenodd" />
+                        </svg>
+                        Investment Summary
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-purple-900/30 p-4 rounded-lg border border-purple-900/50">
+                            <p class="text-sm text-gray-400">Initial Investment</p>
+                            <p id="initialInvestment" class="text-xl font-bold">$0.00</p>
+                        </div>
+                        <div class="bg-purple-900/30 p-4 rounded-lg border border-purple-900/50">
+                            <p class="text-sm text-gray-400">Tokens Purchased</p>
+                            <p id="tokensPurchased" class="text-xl font-bold">0</p>
+                        </div>
+                        <div class="bg-black p-4 rounded-lg border border-purple-900/50">
+                            <p class="text-sm text-gray-400">Current Value</p>
+                            <p id="investmentValue" class="text-xl font-bold">$0.00</p>
+                        </div>
+                        <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <p class="text-sm text-gray-400">Net Profit</p>
+                            <p id="netProfit" class="text-xl font-bold">$0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROI Results -->
+                <div class="bg-dark/80 rounded-2xl p-6 border border-purple-900 shadow-xl">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        ROI Analysis
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Profit/Loss:</span>
+                            <span id="profitLoss" class="text-xl font-bold">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">ROI Percentage:</span>
+                            <span id="roiPercentage" class="text-xl font-bold">0%</span>
+                        </div>
+                        <div class="w-full bg-black rounded-full h-2.5 mt-2 border border-purple-900/50">
+                            <div id="roiBar" class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 bg-dark/90 rounded-2xl p-6 border border-purple-900 shadow-xl max-w-4xl mx-auto">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                </svg>
+                How Market Cap Affects Your ROI
+            </h2>
+            <div class="text-gray-400">
+                <p class="mb-3">Market capitalization (market cap) represents the total value of a cryptocurrency. It's calculated by multiplying the current price by the circulating supply.</p>
+                <p class="mb-3">When market cap increases, assuming the token supply remains constant, the price of each token increases. This calculator helps you understand how changes in market cap affect your investment.</p>
+                <p>For example, if a project moves from a $1M market cap to a $10M market cap with constant supply, your tokens would be worth 10x their original value.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculateBtn = document.getElementById('calculateBtn');
+            const initialCapInput = document.getElementById('initialCap');
+            const investmentInput = document.getElementById('investment');
+            const newCapInput = document.getElementById('newCap');
+            // Fixed token supply value (1 billion)
+            const tokenSupply = 1000000000;
+            
+            // Result elements
+            // Result elements
+            const tokensPurchasedEl = document.getElementById('tokensPurchased');
+            const newPriceEl = document.getElementById('newPrice');
+            const investmentValueEl = document.getElementById('investmentValue');
+            const profitLossEl = document.getElementById('profitLoss');
+            const roiPercentageEl = document.getElementById('roiPercentage');
+            const roiBarEl = document.getElementById('roiBar');
+            const initialPriceEl = document.getElementById('initialPrice');
+
+            calculateBtn.addEventListener('click', calculateROI);
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                initialCapInput.value = '';
+                investmentInput.value = '';
+                newCapInput.value = '';
+                
+                // Reset all result displays
+                document.getElementById('initialInvestment').textContent = '$0.00';
+                tokensPurchasedEl.textContent = '0';
+                investmentValueEl.textContent = '$0.00';
+                document.getElementById('netProfit').textContent = '$0.00';
+                profitLossEl.textContent = '$0.00';
+                profitLossEl.className = 'text-xl font-bold';
+                roiPercentageEl.textContent = '0%';
+                roiPercentageEl.className = 'text-xl font-bold';
+                roiBarEl.style.width = '50%';
+                
+                // Clear chart if exists
+                if (roiChart) {
+                    roiChart.destroy();
+                    roiChart = null;
+                }
+            });
+
+            function calculateROI() {
+                const initialCap = parseFloat(initialCapInput.value);
+                const investment = parseFloat(investmentInput.value);
+                const newCap = parseFloat(newCapInput.value);
+                if (!initialCap || !investment || !newCap) {
+                    alert('Please fill in all fields with valid numbers');
+                    return;
+                }
+                
+                // Calculations
+                const initialPrice = initialCap / tokenSupply;
+                const tokensPurchased = investment / initialPrice;
+                const newPrice = newCap / tokenSupply;
+                const investmentValue = tokensPurchased * newPrice;
+                const profitLoss = investmentValue - investment;
+                const roiPercentage = ((investmentValue - investment) / investment) * 100;
+                
+                // Update UI
+                document.getElementById('initialInvestment').textContent = `${investment.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+                tokensPurchasedEl.textContent = tokensPurchased.toLocaleString(undefined, {maximumFractionDigits: 2});
+                investmentValueEl.textContent = `${investmentValue.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+                document.getElementById('netProfit').textContent = `${profitLoss >= 0 ? '+' : '-'}${Math.abs(profitLoss).toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+                
+                // Format profit/loss with colors
+                if (profitLoss >= 0) {
+                    profitLossEl.textContent = `+$${profitLoss.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+                    profitLossEl.className = 'text-xl font-bold text-green-400';
+                } else {
+                    profitLossEl.textContent = `-$${Math.abs(profitLoss).toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+                    profitLossEl.className = 'text-xl font-bold text-red-400';
+                }
+                
+                // Format ROI percentage
+                if (roiPercentage >= 0) {
+                    roiPercentageEl.textContent = `+${roiPercentage.toFixed(2)}%`;
+                    roiPercentageEl.className = 'text-xl font-bold text-green-400';
+                } else {
+                    roiPercentageEl.textContent = `${roiPercentage.toFixed(2)}%`;
+                    roiPercentageEl.className = 'text-xl font-bold text-red-400';
+                }
+                
+                // Update ROI progress bar (limit to -100% to +100% for display purposes)
+                const displayPercentage = Math.min(Math.max(roiPercentage, -100), 100);
+                roiBarEl.style.width = `${50 + (displayPercentage / 2)}%`;
+                
+            }
+            
+            
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=xw5io/memeroi" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
