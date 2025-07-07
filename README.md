@@ -1,0 +1,2 @@
+# memeroi
+calculator for memecoins
