@@ -1,4 +1,4 @@
-# MEMEROI Calculator
+# MEMEROI Calculator - https://xw5io.github.io/memeroi/
 
 💵 **Crypto ROI & Investment Planner**
 
